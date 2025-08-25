@@ -10,9 +10,13 @@ import SwiftData
 
 @main
 struct IfiApp: App {
+    // MARK: - Dependencies
+
+    /// Shared ModelContainer holding the Chat models
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            ChatMessage.self,
+            ChatThread.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -23,9 +27,13 @@ struct IfiApp: App {
         }
     }()
 
+    /// Shared API client for the lifetime of the app
+    private let apiClient = APIClient(baseURLString: ProcessInfo.processInfo.environment["IFI_API_BASE_URL"] ?? "http://localhost:3000")
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ThreadListView(apiClient: apiClient)
+                .preferredColorScheme(.dark) // Force dark theme
         }
         .modelContainer(sharedModelContainer)
     }
