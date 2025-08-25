@@ -237,7 +237,15 @@ struct MessageBubble: View {
             
             VStack(alignment: isFromUser ? .trailing : .leading, spacing: 4) {
                 // Message content
-                Text(message.content)
+                Group {
+                    // Assistant messages (final, not streaming) render Markdown
+                    if !isFromUser && !isStreaming {
+                        MarkdownText(markdown: message.content)
+                    } else {
+                        // User messages and live-streaming chunks render plain text
+                        Text(message.content)
+                    }
+                }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 10)
                     .background(
@@ -275,6 +283,23 @@ struct MessageBubble: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(isFromUser ? "You" : "Assistant") said \(message.content)")
         .accessibilityHint(isFromUser ? "Your message" : "Assistant's response")
+    }
+}
+
+// MARK: - Markdown Renderer
+
+/// Lightweight Markdown renderer that falls back to plain text on failure.
+/// Uses `AttributedString(markdown:)`, available from iOS 15+.
+struct MarkdownText: View {
+    let markdown: String
+    
+    var body: some View {
+        if let attributed = try? AttributedString(markdown: markdown) {
+            Text(attributed)
+        } else {
+            // Fallback for malformed Markdown
+            Text(markdown)
+        }
     }
 }
 
