@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 import { start } from 'workflow/api'
-import { handleUserSignup } from './workflows/job.js'
+import { handleJob } from './workflows/job.js'
 
-const app = new Hono();
+const app = new Hono()
 
-app.post("/api/signup", async (c) => {
-  const { email } = await c.req.json();
-  await start(handleUserSignup, [email]);
-  return c.json({ message: "User signup workflow started" });
-});
-export default app;
+app.get('/api/signup', async (c) => {
+  await start(handleJob, [{ jobId: 'cmil89zce000004i84k12r01b' }])
+  return c.json({ message: "User signup workflow started" })
+})
+
+export default app

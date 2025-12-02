@@ -8,8 +8,12 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.19.6",
+    "@prisma/adapter-neon": "^7.0.1",
+    "@prisma/client": "^7.0.1",
+    "ai": "^5.0.106",
     "hono": "^4.10.7",
     "nitro": "3.0.1-alpha.1",
+    "prisma": "^7.0.1",
     "rollup": "^4.53.3",
     "workflow": "4.0.1-beta.24"
   },

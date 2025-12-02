@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client"
+  previewFeatures = ["postgresqlExtensions", "fullTextSearchPostgres"]
+  output          = "../src/db/generated"
+  engineType      = "client"
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [pgvector(map: "vector")]
+}
+
+model Thread {
+  id         String   @id @default(cuid())
+  title      String
+  // New lifecycle state for multi-spec workflow
+  // planning | working | waiting_for_feedback | archived
+  state      String   @default("planning")
+  chat       Json
+  stream_id  String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  specs Spec[]
+
+  @@index([created_at(sort: Desc)])
+  @@index([state])
+}
+
+model Spec {
+  id         String   @id @default(cuid())
+  thread_id  String?
+  version    Int      @default(1)
+  title      String
+  content    String   @db.Text
+  // initial | update
+  type       String   @default("initial")
+  // Branch this spec targets (e.g. feature branch of open PR)
+  branch     String?
+  // Repository this spec targets (e.g. owner/repo)
+  repo       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  thread Thread? @relation(fields: [thread_id], references: [id], onDelete: Cascade)
+  jobs   Job[]
+
+  @@index([thread_id])
+  @@index([type])
+}
+
+model Job {
+  id         String   @id @default(cuid())
+  spec_id    String
+  status     String
+  error      String?  @db.Text
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  spec Spec @relation(fields: [spec_id], references: [id])
+
+  @@index([status])
+  @@index([created_at(sort: Desc)])
+  @@index([spec_id])
+}

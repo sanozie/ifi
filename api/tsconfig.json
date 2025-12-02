@@ -15,7 +15,24 @@
       {
         "name": "workflow"
       },
-    ]
+    ],
+    "paths": {
+      "@db": ["./src/db"],
+      "@db/*": ["./src/db/*"],
+      "@integrations": ["./src/integrations"],
+      "@integrations/*": ["./src/integrations/*"],
+      "@interfaces": ["./src/interfaces"],
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@providers": ["./src/providers"],
+      "@providers/*": ["./src/providers/*"],
+      "@routes": ["./src/routes"],
+      "@routes/*": ["./src/routes/*"],
+      "@constants": ["./src/constants"],
+      "@constants/*": ["./src/constants/*"],
+      "@generated/*": ["./generated/*"],
+      "@workflows": ["./src/workflows"],
+      "@workflows/*": ["./src/workflows/*"]
+    }
   },
   "exclude": ["node_modules"]
 }
