@@ -10,7 +10,7 @@ function deriveFeatureBranch(spec: Spec): string {
 
 export async function handleJob( jobId: string) {
   "use workflow"
-  // const { job, spec } = await prepareJob({ jobId })
+  const { job, spec } = await prepareJob({ jobId })
   // await executeJob({ spec, job })
   return { success: true, message: `Job ${jobId} processed successfully` }
 }
@@ -19,25 +19,25 @@ async function prepareJob({ jobId }: { jobId: string }) {
   "use step"
   console.log(`[worker] Processing job ${jobId}`)
 
-  let job = await getJob(jobId)
+  // let job = await getJob(jobId)
+  //
+  // if (!job) throw new Error(`Job ${jobId} not found`)
+  //
+  // let spec = await getSpec(job.spec_id)
+  //
+  // if (!spec) throw new Error(`Spec ${job.spec_id} not found for job ${job.id}`)
+  //
+  // // 3. Update status to apply and publish
+  // job = await updateJob(job.id, { status: JobStatus.APPLY })
+  //
+  // // Determine a feature branch - for UPDATE specs, use the branch
+  // const featureBranch = spec.type === SpecType.UPDATE && spec.branch
+  //   ? spec.branch
+  //   : deriveFeatureBranch(spec)
+  //
+  // spec = await updateSpec(spec.id, { branch: featureBranch })
 
-  if (!job) throw new Error(`Job ${jobId} not found`)
-
-  let spec = await getSpec(job.spec_id)
-
-  if (!spec) throw new Error(`Spec ${job.spec_id} not found for job ${job.id}`)
-
-  // 3. Update status to apply and publish
-  job = await updateJob(job.id, { status: JobStatus.APPLY })
-
-  // Determine a feature branch - for UPDATE specs, use the branch
-  const featureBranch = spec.type === SpecType.UPDATE && spec.branch
-    ? spec.branch
-    : deriveFeatureBranch(spec)
-
-  spec = await updateSpec(spec.id, { branch: featureBranch })
-
-  return { job, spec }
+  return { job: null, spec: null }
 }
 
 /**
