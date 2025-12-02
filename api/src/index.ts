@@ -5,7 +5,7 @@ import { handleJob } from '@workflows/job.js'
 const app = new Hono()
 
 app.get('/job', async (c) => {
-  await start(handleJob, ['cmil89zce000004i84k12r01b'])
+  await handleJob('cmil89zce000004i84k12r01b')
   return c.json({ message: "Job Queued for cmil89zce000004i84k12r01b" })
 })
 
