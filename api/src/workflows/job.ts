@@ -18,8 +18,14 @@ export async function handleJob( jobId: string) {
 async function prepareJob({ jobId }: { jobId: string }) {
   "use step"
   console.log(`[worker] Processing job ${jobId}`)
+  try {
+    let job = await getJob(jobId)
+    console.log(`[worker] Job ${jobId} fetched successfully`)
+  } catch (error: any) {
+    console.error(`[worker] Error fetching job ${jobId}: ${error.message}`)
+    return { job: null, spec: null }
+  }
 
-  // let job = await getJob(jobId)
   //
   // if (!job) throw new Error(`Job ${jobId} not found`)
   //
