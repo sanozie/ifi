@@ -12,6 +12,7 @@ export async function handleJob({ jobId }: { jobId: string }) {
   "use workflow"
   const { job, spec } = await prepareJob({ jobId })
   await executeJob({ spec, job })
+  return { success: true }
 }
 
 async function prepareJob({ jobId }: { jobId: string }) {
