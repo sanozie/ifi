@@ -4,9 +4,9 @@ import { handleJob } from './workflows/job.js'
 
 const app = new Hono()
 
-app.get('/api/signup', async (c) => {
+app.get('/', async (c) => {
   await start(handleJob, [{ jobId: 'cmil89zce000004i84k12r01b' }])
-  return c.json({ message: "User signup workflow started" })
+  return c.json({ message: "Job Queued for cmil89zce000004i84k12r01b" })
 })
 
 export default app
