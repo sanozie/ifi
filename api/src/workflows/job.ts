@@ -8,7 +8,7 @@ function deriveFeatureBranch(spec: Spec): string {
   return `feat/autogen-${spec.id.slice(0, 8)}`;
 }
 
-export async function handleJob( jobId: string)) {
+export async function handleJob( jobId: string) {
   "use workflow"
   const { job, spec } = await prepareJob({ jobId })
   await executeJob({ spec, job })
