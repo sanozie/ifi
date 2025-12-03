@@ -6,6 +6,7 @@ generator client {
   previewFeatures = ["postgresqlExtensions", "fullTextSearchPostgres"]
   output          = "../src/db/generated"
   engineType      = "client"
+  moduleFormat    = "cjs"
 }
 
 datasource db {
