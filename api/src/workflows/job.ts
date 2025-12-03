@@ -9,7 +9,7 @@ function deriveFeatureBranch(spec: Spec): string {
 }
 
 export async function handleJob( jobId: string) {
-  // "use workflow"
+  "use workflow"
   const { job, spec } = await prepareJob({ jobId })
   // await executeJob({ spec, job })
   return { success: true, message: `Job ${jobId} processed successfully` }
@@ -19,8 +19,8 @@ async function prepareJob({ jobId }: { jobId: string }) {
   // "use step"
   console.log(`[worker] Processing job ${jobId}`)
   try {
-    let job = await getJob(jobId)
-    console.log(`[worker] Job ${jobId} fetched successfully`)
+    let job: Job = await getJob(jobId)
+    console.log(`[worker] Job ${jobId} fetched successfully: ${JSON.stringify(job, null, 2)}`)
   } catch (error: any) {
     console.error(`[worker] Error fetching job ${jobId}: ${error.message}`)
     return { job: null, spec: null }
