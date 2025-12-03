@@ -13,6 +13,8 @@ import {
 } from '@db'
 import { JobStatus, type ModelConfig } from '@interfaces'
 import { modelConfig } from '@constants'
+import { handleJob } from '@workflows/worker'
+import { start } from 'workflow/api'
 
 
 export function reportCompletionTool(mcptool: any) {
@@ -114,9 +116,9 @@ export function finalizeSpecTool(mcptool: any) {
           status: JobStatus.QUEUED,
         })
 
-        await fetch(`/api/job/${job.id}`)
-
-        return { jobId: job.id };
+        // await fetch(`https://www.ifi.dev/api/job/${job.id}`)
+        const run = await start(handleJob, [{ jobId: job.id }])
+        return { job: job.id, run: run.runId };
       } catch (err: any) {
         return { error: true, message: `finalizeSpec failed: ${err.message}` };
       }
