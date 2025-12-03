@@ -1,51 +1,23 @@
 import { type ModelMessage, streamText, type StreamTextOnFinishCallback, tool, type UIMessageChunk } from 'ai'
 import type { ModelConfig } from '@interfaces'
 import { modelConfig, REPOS } from '@constants'
-import { webSearch } from '@exalabs/ai-sdk'
-import { closeSandboxTool, initPlannerSandboxTool } from '@providers/sandbox'
-import { cliQueryTool } from '@providers/continue'
-import { draftSpecTool, finalizeSpecTool, reportCompletionTool, updateSpecTool, updateTitleTool } from '@providers/mcp'
 import { DurableAgent } from '@workflow/ai/agent'
 import { getWritable } from 'workflow'
+import { plannerTools } from '@providers'
 
-async function executePlan({ messages, onFinish, config = {} }:
-                           {
-                             messages: ModelMessage[],
-                             onFinish?: StreamTextOnFinishCallback<any>
-                             config?: Partial<ModelConfig>
-                           }) {
-  try {
-    const mergedConfig = { ...modelConfig, ...config };
+export async function plan({ messages }: { messages: ModelMessage[] }) {
+  "use workflow"
 
-    /* --------------------------------------------------------------- */
-    /* 1)  Function entry                                              */
-    /* --------------------------------------------------------------- */
-    console.log("[plan]▶️  ENTER");
+  /* --------------------------------------------------------------- */
+  /* 1)  Function entry                                              */
+  /* --------------------------------------------------------------- */
+  // Discover available repositories to inform the planner about valid targets
+  const reposNote = REPOS.length
+    ? `Accessible repositories : ${REPOS.join(', ')}`
+    : `No repositories found. Do not reference any repository names unless they appear here when available.`;
 
-    const mcptool: any = tool;
-
-    // Assemble tools while forcing lightweight types to avoid deep inference
-    const tools = {
-      web_search: webSearch(),
-      init_sandbox: initPlannerSandboxTool(mcptool) as any,
-      close_sandbox: closeSandboxTool(mcptool) as any,
-      cli_query: cliQueryTool(mcptool) as any,
-      report_completion: reportCompletionTool(mcptool) as any,
-      draft_spec: draftSpecTool(mcptool) as any,
-      update_spec: updateSpecTool(mcptool) as any,
-      finalize_spec: finalizeSpecTool(mcptool) as any,
-      update_title: updateTitleTool(mcptool) as any,
-    } as const;
-
-    console.log(`[plan] 🛠️  Tools configured: ${Object.keys(tools).join(', ')}`);
-
-    // Discover available repositories to inform the planner about valid targets
-    const reposNote = REPOS.length
-      ? `Accessible repositories : ${REPOS.join(', ')}`
-      : `No repositories found. Do not reference any repository names unless they appear here when available.`;
-
-    // System message that's always included
-    const system = `
+  // System message that's always included
+  const system = `
       You are Ifi, an AI engineering assistant that guides a user through THREE distinct stages.
       
       1. **Planning Discussion** – Conversational back-and-forth to understand the user’s goal.
@@ -77,30 +49,21 @@ async function executePlan({ messages, onFinish, config = {} }:
       • NEVER leak internal reasoning or tool call JSON to the user—only properly formatted tool calls.  
       • Do NOT output any completion text directly; the client UI renders results from tools.
       `;
-    console.log(`[plan] 🚀 Calling streamText(model="${mergedConfig.plannerModel}") …`);
+  console.log(`[plan] 🚀 Calling streamText(model="${modelConfig.plannerModel}") …`);
 
-    const writable = getWritable<UIMessageChunk>();
+  const writable = getWritable<UIMessageChunk>();
 
-    const agent = new DurableAgent({
-      model: mergedConfig.plannerModel,
-      system,
-      tools,
-    })
+  const agent = new DurableAgent({
+    model: modelConfig.plannerModel,
+    system,
+    tools: plannerTools,
+  })
 
-    await agent.stream({
-      messages,
-      stopWhen: (response: any) => response.toolCalls?.some(
-        (call: { toolName?: string }) => call.toolName === 'reportCompletion',
-      ),
-      writable
-    })
-  } catch (error: any) {
-    console.error("[plan] 🛑 Error: ", error.message);
-    throw new Error(`Failed to plan: ${error.message}`);
-  }
-}
-
-export async function plan({ messages }: { messages: ModelMessage[] }) {
-  "use workflow"
-  await executePlan({ messages })
+  await agent.stream({
+    messages,
+    stopWhen: (response: any) => response.toolCalls?.some(
+      (call: { toolName?: string }) => call.toolName === 'reportCompletion',
+    ),
+    writable
+  })
 }
