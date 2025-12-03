@@ -50,6 +50,7 @@ async function prepareJob({ jobId }: { jobId: string }) {
  * Central model function that orchestrates worker tools for job processing
  */
 async function executeJob({ spec, job }: { spec: Spec, job: Job }) {
+  "use step"
   try {
     console.log(`[executeWorkerModel] Starting job processing for ${job.id}`)
 
