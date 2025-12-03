@@ -8,21 +8,21 @@ function deriveFeatureBranch(spec: Spec): string {
   return `feat/autogen-${spec.id.slice(0, 8)}`;
 }
 
-export async function handleJob( jobId: string) {
+export async function handleJob( id: string) {
   "use workflow"
-  const { job, spec } = await prepareJob({ jobId })
+  const { job, spec } = await prepareJob(id)
   // await executeJob({ spec, job })
-  return { success: true, message: `Job ${jobId} processed successfully` }
+  return { success: true, message: `Job ${id} processed successfully` }
 }
 
-async function prepareJob({ jobId }: { jobId: string }) {
-  // "use step"
-  console.log(`[worker] Processing job ${jobId}`)
+async function prepareJob(id: string) {
+  "use step"
+  console.log(`[worker] Processing job ${id}`)
   try {
-    let job: Job = await getJob(jobId)
-    console.log(`[worker] Job ${jobId} fetched successfully: ${JSON.stringify(job, null, 2)}`)
+    let job: Job = await getJob(id)
+    console.log(`[worker] Job ${id} fetched successfully: ${JSON.stringify(job, null, 2)}`)
   } catch (error: any) {
-    console.error(`[worker] Error fetching job ${jobId}: ${error.message}`)
+    console.error(`[worker] Error fetching job ${id}: ${error.message}`)
     return { job: null, spec: null }
   }
 
