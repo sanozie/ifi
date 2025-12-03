@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "nitro dev",
-    "build": "prisma generate --generator client --no-engine-import && nitro build",
+    "build": "prisma generate && nitro build",
     "start": "node dist/index.js"
   },
   "dependencies": {
