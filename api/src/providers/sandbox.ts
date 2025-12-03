@@ -38,6 +38,40 @@ const configureSandbox = async ({ sandbox, continueConfig }: { sandbox: Sandbox,
   }])
 
   console.log(`[sandbox] continue config written @ .continue/.continue/config.yaml`)
+
+
+  // Git Operations
+  const gitCredentialHelper = await sandbox.runCommand({
+    cmd: 'git',
+    args: ['config', '--global', 'credential.helper', 'store'],
+  })
+
+  await sandbox.runCommand({
+    cmd: 'echo',
+    args: [`https://x-access-token:${process.env.GITHUB_TOKEN}@github.com`, '>', '~/.git-credentials'],
+  })
+
+  await sandbox.runCommand({
+    cmd: 'git',
+    args: ['config', '--global', 'user.name', 'IFI'],
+  })
+
+  await sandbox.runCommand({
+    cmd: 'git',
+    args: ['config', '--global', 'user.email', 'ai@ifi.dev'],
+  })
+
+  const gitLs = await sandbox.runCommand({
+    cmd: 'git',
+    args: ['ls-remote', '--heads', 'https://github.com/octocat/Hello-World.git'],
+  })
+
+  const gitLsOutput = {
+    stdout: await gitLs.stdout(),
+    stderr: await gitLs.stderr(),
+  }
+
+  console.log(`[sandbox] git configured: ${gitLsOutput.stdout}`)
 }
 
 export const initPlannerSandboxTool = (mcptool: any) => {
