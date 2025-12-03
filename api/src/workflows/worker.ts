@@ -2,10 +2,12 @@ import { getJob, getSpec, updateJob, updateSpec } from '@db'
 import { JobStatus, SpecType } from '@interfaces'
 import type { Spec, Job } from '@db/generated/client'
 import { reportCompletionTool } from '@providers/mcp'
-import { generateText, tool } from 'ai'
+import { generateText, tool, type UIMessageChunk } from 'ai'
 import { cliQueryTool } from '@providers/continue'
 import { closeSandboxTool, initWorkerSandboxTool } from '@providers/sandbox'
-import { DefaultPlannerModel, modelConfig } from '@constants'
+import { DefaultCodegenModel, modelConfig } from '@constants'
+import { DurableAgent } from '@workflow/ai/agent'
+import { getWritable } from 'workflow'
 
 
 // Helper to derive feature branch name
@@ -48,7 +50,6 @@ async function prepareJob({ jobId }: { jobId: string }) {
  * Central model function that orchestrates worker tools for job processing
  */
 async function executeJob({ spec, job }: { spec: Spec, job: Job }) {
-  "use step"
   try {
     console.log(`[executeWorkerModel] Starting job processing for ${job.id}`)
 
@@ -92,27 +93,29 @@ async function executeJob({ spec, job }: { spec: Spec, job: Job }) {
       }
     ];
 
-    console.log(`[executeWorkerModel] 🚀 Calling generateText with model "${DefaultPlannerModel}"`);
+    console.log(`[executeWorkerModel] 🚀 Calling generateText with model "${DefaultCodegenModel}"`);
 
-    // Execute the workflow using the central model
-    const result = await generateText({
+    const agent = new DurableAgent({
       model: modelConfig.codegenModel,
       system,
-      messages,
       tools,
+    })
+
+    const writable = getWritable<UIMessageChunk>();
+
+    await agent.stream({
+      messages,
       stopWhen: (response: any) => response.toolCalls?.some(
         (call: { toolName?: string }) => call.toolName === 'reportCompletion',
       ),
+      writable
     })
 
-    console.log(`[executeWorkerModel] ✅ Workflow completed for job ${job.id}`)
+    console.log(`[executeWorkerModel] ✅ Execution started for job ${job.id}`)
 
     return {
       success: true,
-      result: result.text,
-      toolResults: result.steps?.filter(step => step.toolCalls).map(step => step.toolCalls) || []
     }
-
   } catch (error: any) {
     console.error(`[executeWorkerModel] Error processing job ${job.id}: ${error.message}`)
     return {

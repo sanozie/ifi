@@ -1,33 +1,19 @@
 import type { Context } from 'hono'
-import { getThread } from '@db'
-import { createResumableStreamContext } from 'resumable-stream'
+import { getRun } from 'workflow/api'
+import { createUIMessageStreamResponse } from 'ai'
 
 export default async (c: Context ) => {
   try {
     const { id } = c.req.param();
-    const thread = await getThread(id);
+    const { startIndex: startIndexParam } = c.req.query()
+    const startIndex = startIndexParam
+      ? parseInt(startIndexParam, 10)
+      : undefined;
 
-    if (!thread?.stream_id) {
-      c.status(404)
-      return c.json({ error: 'Thread not found' });
-    }
+    const run = getRun(id);
+    const stream = run.getReadable({ startIndex });
 
-    console.log(`[stream] found stream id of thread: ${thread.stream_id}`)
-
-    const streamContext = createResumableStreamContext({ waitUntil: (promise) => promise.catch(console.error) });
-    const stream = await streamContext.resumeExistingStream(thread?.stream_id)
-
-    if (!stream) {
-      c.status(404)
-      return c.json({ error: 'Stream not found' });
-    }
-
-
-    c.header("Content-Type", "text/event-stream");
-    c.header("x-vercel-ai-ui-message-stream", "v1");
-    console.log(`[stream] found full stream`)
-
-    return c.body(stream)
+    return createUIMessageStreamResponse({ stream });
   } catch (err) {
     console.error('GET /v1/thread/:id/stream error:', err);
     c.status(500)

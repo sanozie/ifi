@@ -14,7 +14,7 @@ import {
 } from '@db'
 import { JobStatus, type ModelConfig } from '@interfaces'
 import { modelConfig } from '@constants'
-import { handleJob } from '@workflows'
+import { handleJob } from '@workflows/worker'
 
 
 export function reportCompletionTool(mcptool: any) {
@@ -27,6 +27,7 @@ export function reportCompletionTool(mcptool: any) {
       code: z.number().optional(),
     }),
     async execute() {
+      "use step"
       return { acknowledged: true };
     },
   }) as any;
@@ -42,6 +43,8 @@ export function draftSpecTool(mcptool: any) {
       repo: z.string().describe('Target repository for the spec, in all lowercase)'),
     }),
     async execute({ threadId, repo }: { threadId: string; repo: string }) {
+      "use step"
+
       try {
         const thread = await getThread(threadId)
         if (!thread) {
@@ -78,6 +81,8 @@ export function updateSpecTool(mcptool: any) {
       content: z.string().optional().describe('Existing spec content to update. Will fully replace the existing spec content.')
     }),
     async execute({ specId, title, repo, content }: { specId: string; title?: string, repo?: string, content?: string }) {
+      "use step"
+
       try {
         const spec = await updateDraftSpec(specId, { title, content, repo })
         return { specId: spec.id, content: spec.content, title: spec.title, repo: spec.repo }
@@ -98,6 +103,8 @@ export function finalizeSpecTool(mcptool: any) {
       threadId: z.string().describe('ID of the thread whose spec should be finalized'),
     }),
     async execute({ threadId }: { threadId: string }) {
+      "use step"
+
       try {
         const spec = await getLatestDraftSpec(threadId);
         if (!spec) {
@@ -129,6 +136,8 @@ export function updateTitleTool(mcptool: any) {
       title: z.string().min(3).max(120).describe('A concise, human-friendly title that summarizes the thread'),
     }),
     async execute({ threadId, title }: { threadId: string; title: string }) {
+      "use step"
+
       try {
         const trimmed = title.trim();
         if (!trimmed) {

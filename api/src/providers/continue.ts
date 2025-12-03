@@ -24,6 +24,8 @@ export function cliQueryTool(mcptool: any) {
       sandboxId: z.string().describe('ID of the Sandbox instance to use for the query. Must be provided. If you do not have a Sandbox instance, use the initSandbox tool first.'),
     }),
     async execute({ query, sandboxId }: { query: string; sandboxId: string; }) {
+      "use step"
+
       try {
         const sandbox = await Sandbox.get({ sandboxId })
         return await runContinueCliQuery({ query, sandbox })

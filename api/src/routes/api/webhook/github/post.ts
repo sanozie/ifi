@@ -1,4 +1,4 @@
-import { Context } from 'hono'
+import type { Context } from 'hono'
 import { Webhooks } from '@octokit/webhooks'
 import { createJob, createUpdateSpec } from '@db'
 import { JobStatus } from '@interfaces'

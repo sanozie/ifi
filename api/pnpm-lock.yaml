@@ -32,6 +32,9 @@ importers:
       '@vercel/sandbox':
         specifier: ^1.0.4
         version: 1.0.4
+      '@workflow/ai':
+        specifier: 4.0.1-beta.24
+        version: 4.0.1-beta.24(ai@5.0.106(zod@4.1.13))(workflow@4.0.1-beta.24(@aws-sdk/client-sts@3.943.0)(@opentelemetry/api@1.9.0)(next@16.0.6(@opentelemetry/api@1.9.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))
       ai:
         specifier: ^5.0.106
         version: 5.0.106(zod@4.1.13)
@@ -78,8 +81,44 @@ importers:
 
 packages:
 
+  '@ai-sdk/anthropic@2.0.49':
+    resolution: {integrity: sha512-XedtHVHX6UOlR/aa8bDmlsDc/e+kjC+l6qBeqnZPF05np6Xs7YR8tfH7yARq0LDq3m+ysw7Qoy9M5KRL+1C8qA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
+  '@ai-sdk/gateway@2.0.15':
+    resolution: {integrity: sha512-i1YVKzC1dg9LGvt+GthhD7NlRhz9J4+ZRj3KELU14IZ/MHPsOBiFeEoCCIDLR+3tqT8/+5nIsK3eZ7DFRfMfdw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
   '@ai-sdk/gateway@2.0.18':
     resolution: {integrity: sha512-sDQcW+6ck2m0pTIHW6BPHD7S125WD3qNkx/B8sEzJp/hurocmJ5Cni0ybExg6sQMGo+fr/GWOwpHF1cmCdg5rQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
+  '@ai-sdk/google@2.0.43':
+    resolution: {integrity: sha512-qO6giuoYCX/SdZScP/3VO5Xnbd392zm3HrTkhab/efocZU8J/VVEAcAUE1KJh0qOIAYllofRtpJIUGkRK8Q5rw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
+  '@ai-sdk/openai-compatible@1.0.27':
+    resolution: {integrity: sha512-bpYruxVLhrTbVH6CCq48zMJNeHu6FmHtEedl9FXckEgcIEAi036idFhJlcRwC1jNCwlacbzb8dPD7OAH1EKJaQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
+  '@ai-sdk/openai@2.0.72':
+    resolution: {integrity: sha512-9j8Gdt9gFiUGFdQIjjynbC7+w8YQxkXje6dwAq1v2Pj17wmB3U0Td3lnEe/a+EnEysY3mdkc8dHPYc5BNev9NQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
+
+  '@ai-sdk/provider-utils@3.0.17':
+    resolution: {integrity: sha512-TR3Gs4I3Tym4Ll+EPdzRdvo/rc8Js6c4nVhFLuvGLX/Y4V9ZcQMa/HTiYsHEgmYrf1zVi6Q145UEZUfleOwOjw==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -93,6 +132,12 @@ packages:
   '@ai-sdk/provider@2.0.0':
     resolution: {integrity: sha512-6o7Y2SeO9vFKB8lArHXehNuusnpddKPk7xqL7T2/b+OvXMRIXUO1rR4wcv1hAFUAT9avGZshty3Wlua/XA7TvA==}
     engines: {node: '>=18'}
+
+  '@ai-sdk/xai@2.0.37':
+    resolution: {integrity: sha512-4Ah/+qWZP62eatMndykg44QBwDi9Rk4rS0UIWPLNX1eT02+RrCWXIGVu0147cNC0iMTEmnTNByqPFOWM6wifqw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      zod: ^3.25.76 || ^4.1.8
 
   '@aws-crypto/sha256-browser@5.2.0':
     resolution: {integrity: sha512-AXfN/lGotSQwu6HNcEsIASo7kWXZ5HYWvfOmSNKDsEqC4OashTp8alTmaz+F7TC2L083SFv5RdB+qU3Vs1kZqw==}
@@ -1539,6 +1584,12 @@ packages:
   '@vercel/sandbox@1.0.4':
     resolution: {integrity: sha512-Qg2JZNTg4qyTE53L6cI6e7WdngtsUDnkZ2BrTAHy/3FTukPD3yxbdUScBQA5CtvwS0ffG1tngWVOldIFk6Yi9A==}
 
+  '@workflow/ai@4.0.1-beta.24':
+    resolution: {integrity: sha512-gKj1ozC+Mi4bNx7KBrQta84TOZj8WZs2nLHBk+AKMy8ZU0TCntG35JVCPr2xRKhXmL6pkUDlAbGpfupgWtRWxg==}
+    peerDependencies:
+      ai: ^5
+      workflow: 4.0.1-beta.24
+
   '@workflow/astro@4.0.0-beta.3':
     resolution: {integrity: sha512-bLOea2Og54Twm09Xyq835GpDO5DCbU4Yb+3w0tMk+HtmYLc1nNL+vHkODrVa+El1hZY57eGhrpW+emRS1ERgIQ==}
 
@@ -2942,12 +2993,50 @@ packages:
 
 snapshots:
 
+  '@ai-sdk/anthropic@2.0.49(zod@4.1.11)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.11)
+      zod: 4.1.11
+
+  '@ai-sdk/gateway@2.0.15(zod@4.1.11)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.11)
+      '@vercel/oidc': 3.0.5
+      zod: 4.1.11
+
   '@ai-sdk/gateway@2.0.18(zod@4.1.13)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@ai-sdk/provider-utils': 3.0.18(zod@4.1.13)
       '@vercel/oidc': 3.0.5
       zod: 4.1.13
+
+  '@ai-sdk/google@2.0.43(zod@4.1.11)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.11)
+      zod: 4.1.11
+
+  '@ai-sdk/openai-compatible@1.0.27(zod@4.1.11)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.11)
+      zod: 4.1.11
+
+  '@ai-sdk/openai@2.0.72(zod@4.1.11)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.11)
+      zod: 4.1.11
+
+  '@ai-sdk/provider-utils@3.0.17(zod@4.1.11)':
+    dependencies:
+      '@ai-sdk/provider': 2.0.0
+      '@standard-schema/spec': 1.0.0
+      eventsource-parser: 3.0.6
+      zod: 4.1.11
 
   '@ai-sdk/provider-utils@3.0.18(zod@4.1.13)':
     dependencies:
@@ -2959,6 +3048,13 @@ snapshots:
   '@ai-sdk/provider@2.0.0':
     dependencies:
       json-schema: 0.4.0
+
+  '@ai-sdk/xai@2.0.37(zod@4.1.11)':
+    dependencies:
+      '@ai-sdk/openai-compatible': 1.0.27(zod@4.1.11)
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.11)
+      zod: 4.1.11
 
   '@aws-crypto/sha256-browser@5.2.0':
     dependencies:
@@ -4467,6 +4563,18 @@ snapshots:
     transitivePeerDependencies:
       - bare-abort-controller
       - react-native-b4a
+
+  '@workflow/ai@4.0.1-beta.24(ai@5.0.106(zod@4.1.13))(workflow@4.0.1-beta.24(@aws-sdk/client-sts@3.943.0)(@opentelemetry/api@1.9.0)(next@16.0.6(@opentelemetry/api@1.9.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))':
+    dependencies:
+      '@ai-sdk/anthropic': 2.0.49(zod@4.1.11)
+      '@ai-sdk/gateway': 2.0.15(zod@4.1.11)
+      '@ai-sdk/google': 2.0.43(zod@4.1.11)
+      '@ai-sdk/openai': 2.0.72(zod@4.1.11)
+      '@ai-sdk/provider': 2.0.0
+      '@ai-sdk/xai': 2.0.37(zod@4.1.11)
+      ai: 5.0.106(zod@4.1.13)
+      workflow: 4.0.1-beta.24(@aws-sdk/client-sts@3.943.0)(@opentelemetry/api@1.9.0)(next@16.0.6(@opentelemetry/api@1.9.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+      zod: 4.1.11
 
   '@workflow/astro@4.0.0-beta.3(@aws-sdk/client-sts@3.943.0)(@opentelemetry/api@1.9.0)':
     dependencies:

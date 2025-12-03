@@ -1,0 +1,105 @@
+import { type ModelMessage, streamText, type StreamTextOnFinishCallback, tool, type UIMessageChunk } from 'ai'
+import type { ModelConfig } from '@interfaces'
+import { modelConfig, REPOS } from '@constants'
+import { webSearch } from '@exalabs/ai-sdk'
+import { closeSandboxTool, initPlannerSandboxTool } from '@providers/sandbox'
+import { cliQueryTool } from '@providers/continue'
+import { draftSpecTool, finalizeSpecTool, reportCompletionTool, updateSpecTool, updateTitleTool } from '@providers/mcp'
+import { DurableAgent } from '@workflow/ai/agent'
+import { getWritable } from 'workflow'
+
+export async function plan({ messages, onFinish, config = {} }:
+                    {
+                      messages: ModelMessage[],
+                      onFinish?: StreamTextOnFinishCallback<any>
+                      config?: Partial<ModelConfig>
+                    }) {
+  "use workflow"
+  try {
+
+    const mergedConfig = { ...modelConfig, ...config };
+
+    /* --------------------------------------------------------------- */
+    /* 1)  Function entry                                              */
+    /* --------------------------------------------------------------- */
+    console.log("[plan]▶️  ENTER");
+
+    const mcptool: any = tool;
+
+    // Assemble tools while forcing lightweight types to avoid deep inference
+    const tools = {
+      web_search: webSearch(),
+      init_sandbox: initPlannerSandboxTool(mcptool) as any,
+      close_sandbox: closeSandboxTool(mcptool) as any,
+      cli_query: cliQueryTool(mcptool) as any,
+      report_completion: reportCompletionTool(mcptool) as any,
+      draft_spec: draftSpecTool(mcptool) as any,
+      update_spec: updateSpecTool(mcptool) as any,
+      finalize_spec: finalizeSpecTool(mcptool) as any,
+      update_title: updateTitleTool(mcptool) as any,
+    } as const;
+
+    console.log(`[plan] 🛠️  Tools configured: ${Object.keys(tools).join(', ')}`);
+
+    // Discover available repositories to inform the planner about valid targets
+    const reposNote = REPOS.length
+      ? `Accessible repositories : ${REPOS.join(', ')}`
+      : `No repositories found. Do not reference any repository names unless they appear here when available.`;
+
+    // System message that's always included
+    const system = `
+      You are Ifi, an AI engineering assistant that guides a user through THREE distinct stages.
+      
+      1. **Planning Discussion** – Conversational back-and-forth to understand the user’s goal.
+      2. **Drafting Spec** – Produce a structured design/implementation spec that the user can review.
+      3. **Finalization & Implementation** – After explicit user approval, queue an implementation job.
+      
+      ENVIRONMENT CONTEXT
+      • ${reposNote}
+      • You must only operate on repositories from this list. Never invent or assume a repository that does not exist.
+      
+      Determine the CURRENT INTENT from the latest user message:
+      • If they are still clarifying requirements or asking questions → stay in *Planning Discussion*. Use the \`web_search\` tool to search for relevant information, and the \`cli_query\` tool to query the codebase directly.
+      • If they indicate they are **ready to see a spec** ( e.g. “sounds good, can you draft a spec?” or “let’s proceed” ) → CALL the \`draft_spec\` tool exactly once.
+      • If they explicitly **approve the draft spec** ( e.g. “looks good, ship it”, “approved”, “go ahead with implementation” ) → CALL the \`finalize_spec\` tool exactly once.
+      
+      The draft spec will be passed onto an expert coding AI agent. In order to give it the best chance of producing high-quality code, you must ensure that:
+      1. The draft spec is created with the most amount of context possible embedded in the spec. This can include file names, line numbers, and other code context.
+      3. Ideal implementation steps and intent are included within the spec.
+      
+      Tool usage rules:
+      • Remember to initialize a sandbox in order to explore repos, and close the sandbox after use.
+      • Never call \`draft_spec\` or \`finalize_spec\` without meeting the intent criteria above.
+      • After calling a tool, wait for the tool response before progressing to the next stage.
+      • When the overall task (including any necessary tool calls) is complete, CALL the \`reportCompletion\` tool **exactly once** with a one-sentence summary.
+      
+      General guidelines:
+      • Keep all normal conversation messages concise and focused.
+      • Make sure to use the update_title tool to make sure the title is always up-to-date with the overall thread. 
+      • NEVER leak internal reasoning or tool call JSON to the user—only properly formatted tool calls.  
+      • Do NOT output any completion text directly; the client UI renders results from tools.
+      `;
+    console.log(`[plan] 🚀 Calling streamText(model="${mergedConfig.plannerModel}") …`);
+
+    const writable = getWritable<UIMessageChunk>();
+
+    const agent = new DurableAgent({
+      model: mergedConfig.plannerModel,
+      system,
+      tools,
+    })
+
+    await agent.stream({
+      messages,
+      stopWhen: (response: any) => response.toolCalls?.some(
+        (call: { toolName?: string }) => call.toolName === 'reportCompletion',
+      ),
+      writable
+    })
+
+
+  } catch (error: any) {
+    console.error("[plan] 🛑 Error: ", error.message);
+    throw new Error(`Failed to plan: ${error.message}`);
+  }
+}

@@ -54,6 +54,7 @@ export const initPlannerSandboxTool = (mcptool: any) => {
       sandboxId: z.string().describe('ID of the Sandbox instance. Will be used in other tools to interact with the Sandbox instance.'),
     }),
     async execute({ repo }: { repo: string }) {
+      "use step"
       const sandbox = await initSandbox({ repo })
       await configureSandbox({ sandbox, continueConfig: CONTINUE_PLANNER_CONFIG })
       return { sandboxId: sandbox.sandboxId }
@@ -75,6 +76,7 @@ export const initWorkerSandboxTool = (mcptool: any) => {
       sandboxId: z.string().describe('ID of the Sandbox instance. Will be used in other tools to interact with the Sandbox instance.'),
     }),
     async execute({ repo }: { repo: string }) {
+      "use step"
       const sandbox = await initSandbox({ repo })
       await configureSandbox({ sandbox, continueConfig: CONTINUE_WORKER_CONFIG })
       return { sandboxId: sandbox.sandboxId }
@@ -91,6 +93,7 @@ export const closeSandboxTool = (mcptool: any) => {
       sandboxId: z.string().describe('ID of the Sandbox instance to close.'),
     }),
     async execute({ sandboxId }: { sandboxId: string }) {
+      "use step"
       const sandbox = await Sandbox.get({ sandboxId })
       await sandbox.stop()
     }
