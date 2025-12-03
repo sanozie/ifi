@@ -4,7 +4,7 @@ import { PrismaNeon } from '@prisma/adapter-neon'
 import type { UIMessage } from 'ai'
 
 const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL })
-const prisma = new PrismaClient({ adapter })
+export const prisma = new PrismaClient({ adapter })
 
 /* ------------------------------------------------------------------ */
 /*  Threads                                                           */

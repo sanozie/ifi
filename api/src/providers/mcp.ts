@@ -9,8 +9,8 @@ import {
   createJob,
   getLatestDraftSpec,
   getThread,
-  prisma,
   updateDraftSpec,
+  prisma
 } from '@db'
 import { JobStatus, type ModelConfig } from '@interfaces'
 import { modelConfig } from '@constants'
