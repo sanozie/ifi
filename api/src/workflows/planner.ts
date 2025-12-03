@@ -14,8 +14,8 @@ async function executePlan({ messages, onFinish, config = {} }:
                              onFinish?: StreamTextOnFinishCallback<any>
                              config?: Partial<ModelConfig>
                            }) {
+  "use step"
   try {
-
     const mergedConfig = { ...modelConfig, ...config };
 
     /* --------------------------------------------------------------- */
@@ -95,20 +95,13 @@ async function executePlan({ messages, onFinish, config = {} }:
       ),
       writable
     })
-
-
   } catch (error: any) {
     console.error("[plan] 🛑 Error: ", error.message);
     throw new Error(`Failed to plan: ${error.message}`);
   }
 }
 
-export async function plan({ messages }:
-                    {
-                      messages: ModelMessage[],
-                      onFinish?: StreamTextOnFinishCallback<any>
-                      config?: Partial<ModelConfig>
-                    }) {
+export async function plan({ messages }: { messages: ModelMessage[] }) {
   "use workflow"
   await executePlan({ messages })
 }
