@@ -1,9 +1,11 @@
 import { PrismaClient } from './generated/client.js'
 import { ThreadState, SpecType } from '@interfaces'
+import { Client } from '@neondatabase/serverless'
 import { PrismaNeon } from '@prisma/adapter-neon'
 import type { UIMessage } from 'ai'
 
-const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL })
+const client = new Client({ connectionString: process.env.DATABASE_URL })
+const adapter = new PrismaNeon(client)
 export const prisma = new PrismaClient({ adapter })
 
 /* ------------------------------------------------------------------ */

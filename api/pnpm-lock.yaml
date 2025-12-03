@@ -11,6 +11,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.19.6
         version: 1.19.6(hono@4.10.7)
+      '@neondatabase/serverless':
+        specifier: ^1.0.2
+        version: 1.0.2
       '@prisma/adapter-neon':
         specifier: ^7.0.1
         version: 7.0.1
