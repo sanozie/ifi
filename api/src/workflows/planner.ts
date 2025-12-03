@@ -8,13 +8,12 @@ import { draftSpecTool, finalizeSpecTool, reportCompletionTool, updateSpecTool, 
 import { DurableAgent } from '@workflow/ai/agent'
 import { getWritable } from 'workflow'
 
-export async function plan({ messages, onFinish, config = {} }:
-                    {
-                      messages: ModelMessage[],
-                      onFinish?: StreamTextOnFinishCallback<any>
-                      config?: Partial<ModelConfig>
-                    }) {
-  "use workflow"
+async function executePlan({ messages, onFinish, config = {} }:
+                           {
+                             messages: ModelMessage[],
+                             onFinish?: StreamTextOnFinishCallback<any>
+                             config?: Partial<ModelConfig>
+                           }) {
   try {
 
     const mergedConfig = { ...modelConfig, ...config };
@@ -102,4 +101,14 @@ export async function plan({ messages, onFinish, config = {} }:
     console.error("[plan] 🛑 Error: ", error.message);
     throw new Error(`Failed to plan: ${error.message}`);
   }
+}
+
+export async function plan({ messages }:
+                    {
+                      messages: ModelMessage[],
+                      onFinish?: StreamTextOnFinishCallback<any>
+                      config?: Partial<ModelConfig>
+                    }) {
+  "use workflow"
+  await executePlan({ messages })
 }
