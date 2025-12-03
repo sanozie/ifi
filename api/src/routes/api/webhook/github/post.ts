@@ -2,7 +2,6 @@ import { Context } from 'hono'
 import { Webhooks } from '@octokit/webhooks'
 import { createJob, createUpdateSpec } from '@db'
 import { JobStatus } from '@interfaces'
-import redis from '@integrations/redis'
 
 // GitHub Webhooks setup
 const GITHUB_WEBHOOK_SECRET = process.env.GITHUB_WEBHOOK_SECRET;
@@ -82,14 +81,6 @@ export const github = async (c: Context) => {
   })
 
   console.log(`[webhook] 🎯 Created job: ${job.id}`)
-
-  // Publish job to Redis for worker
-  await redis.publish('jobs', JSON.stringify({
-    jobId: job.id,
-    specId: spec.id,
-  }))
-
-  console.log('[webhook] 📢 Published job to Redis')
 }
 
 const verifyGithubSignature = async (c: Context) => {
