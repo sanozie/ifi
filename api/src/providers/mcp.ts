@@ -1,6 +1,5 @@
 // AI & Workflows
 import { generateText } from 'ai'
-import { start } from 'workflow/api'
 import { z } from 'zod'
 
 // Packages
@@ -14,7 +13,6 @@ import {
 } from '@db'
 import { JobStatus, type ModelConfig } from '@interfaces'
 import { modelConfig } from '@constants'
-import { handleJob } from '@workflows/worker'
 
 
 export function reportCompletionTool(mcptool: any) {
@@ -116,9 +114,9 @@ export function finalizeSpecTool(mcptool: any) {
           status: JobStatus.QUEUED,
         })
 
-        const run = await start(handleJob, [{ jobId: job.id }])
+        await fetch(`/api/job/${job.id}`)
 
-        return { jobId: job.id, runId: run.runId };
+        return { jobId: job.id };
       } catch (err: any) {
         return { error: true, message: `finalizeSpec failed: ${err.message}` };
       }

@@ -4,6 +4,8 @@ import putThreadRoute from '@routes/api/thread/put'
 import deleteThreadRoute from '@routes/api/thread/delete'
 import getThreadStreamRoute from '@routes/api/thread/stream/get'
 import getThreadsRoute from '@routes/api/threads/get'
+import putJobRoute from '@routes/api/job/put'
+import githubWebhookRoute from '@routes/api/webhook/github/post'
 
 export default {
   chat: {
@@ -20,4 +22,12 @@ export default {
   threads: {
     get: getThreadsRoute,
   },
+  webhook: {
+    github: {
+      post: githubWebhookRoute
+    }
+  },
+  job: {
+    put: putJobRoute
+  }
 }

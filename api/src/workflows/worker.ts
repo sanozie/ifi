@@ -2,7 +2,7 @@ import { getJob, getSpec, updateJob, updateSpec } from '@db'
 import { JobStatus, SpecType } from '@interfaces'
 import type { Spec, Job } from '@db/generated/client'
 import { reportCompletionTool } from '@providers/mcp'
-import { generateText, tool, type UIMessageChunk } from 'ai'
+import { tool, type UIMessageChunk } from 'ai'
 import { cliQueryTool } from '@providers/continue'
 import { closeSandboxTool, initWorkerSandboxTool } from '@providers/sandbox'
 import { DefaultCodegenModel, modelConfig } from '@constants'
@@ -50,8 +50,6 @@ async function prepareJob({ jobId }: { jobId: string }) {
  * Central model function that orchestrates worker tools for job processing
  */
 async function executeJob({ spec, job }: { spec: Spec, job: Job }) {
-  "use step"
-
   try {
     console.log(`[executeWorkerModel] Starting job processing for ${job.id}`)
 

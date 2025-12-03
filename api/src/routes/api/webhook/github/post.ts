@@ -10,7 +10,7 @@ const webhooks = GITHUB_WEBHOOK_SECRET
   : null;
 
 
-export const github = async (c: Context) => {
+export default async (c: Context) => {
 
   console.log(`[webhook] ▶️ Incoming GitHub webhook`)
 

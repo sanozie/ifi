@@ -21,4 +21,10 @@ app.get('/api/thread/:id/stream', api.thread.stream.get)
 // Threads Routes
 app.get('/api/threads', api.threads.get)
 
+// Webhook Routes
+app.post('/api/webhook/github', api.webhook.github.post)
+
+// Job Routes
+app.put('/api/job/:id', api.job.put)
+
 export default app

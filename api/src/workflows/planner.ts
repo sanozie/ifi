@@ -14,7 +14,6 @@ async function executePlan({ messages, onFinish, config = {} }:
                              onFinish?: StreamTextOnFinishCallback<any>
                              config?: Partial<ModelConfig>
                            }) {
-  "use step"
   try {
     const mergedConfig = { ...modelConfig, ...config };
 
