@@ -45,7 +45,7 @@ export const CONTINUE_WORKER_CONFIG = `
 export const REPOS = ['ifi-cloud', 'ifi-ui', 'nogent']
 
 // Default AI model constants
-export const DefaultPlannerModel = 'openai/gpt-5.1-codex-mini'
+export const DefaultPlannerModel = 'google/gemini-2.5-flash'
 export const DefaultCodegenModel = 'anthropic/claude-sonnet-4.5'
 export const modelConfig: ModelConfig = {
   plannerModel: process.env.PLANNER_MODEL || DefaultPlannerModel,
