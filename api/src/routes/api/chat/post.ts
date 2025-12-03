@@ -6,16 +6,16 @@ import {
   convertToModelMessages,
   generateId,
   type ModelMessage, streamText,
-  StreamTextOnFinishCallback,
+  type StreamTextOnFinishCallback,
   tool,
   type UIMessage,
 } from 'ai'
 import { createResumableStreamContext } from 'resumable-stream'
 // Packages
 import { modelConfig, REPOS } from '@constants'
-import { ModelConfig } from '@interfaces'
+import type { ModelConfig } from '@interfaces'
 import { getThread, createThread, saveThread } from '@db'
-import type { Thread } from '@generated/prisma/client'
+import type { Thread } from '@db/generated/client'
 // Utils
 import { v4 as uuidV4 } from 'uuid'
 import { closeSandboxTool, initPlannerSandboxTool } from '@providers/sandbox'

@@ -1,6 +1,6 @@
 import { getJob, getSpec, updateJob, updateSpec } from '@db'
 import { JobStatus, SpecType } from '@interfaces'
-import { Spec, Job } from '@db/generated/prisma/client'
+import type { Spec, Job } from '@db/generated/client'
 import { reportCompletionTool } from '@providers/mcp'
 import { generateText, tool } from 'ai'
 import { cliQueryTool } from '@providers/continue'

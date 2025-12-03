@@ -12,7 +12,7 @@ import {
   prisma,
   updateDraftSpec,
 } from '@db'
-import { JobStatus, ModelConfig } from '@interfaces'
+import { JobStatus, type ModelConfig } from '@interfaces'
 import { modelConfig } from '@constants'
 import { handleJob } from '@workflows'
 

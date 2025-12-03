@@ -1,4 +1,4 @@
-import { ModelConfig } from '@interfaces'
+import type { ModelConfig } from '@interfaces'
 
 export const CONTINUE_PLANNER_CONFIG = `
   name: Ifi
