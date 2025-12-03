@@ -6,7 +6,11 @@ export default defineConfig({
   alias: {
     '@db': resolve(__dirname, './src/db'),
     '@interfaces': resolve(__dirname, './src/interfaces'),
+    '@integrations': resolve(__dirname, './src/integrations'),
     '@workflows': resolve(__dirname, './src/workflows'),
+    '@constants': resolve(__dirname, './src/constants'),
+    '@routes': resolve(__dirname, './src/routes'),
+    '@providers': resolve(__dirname, './src/providers'),
   },
   routes: {
     "/**": "./src/index.ts"

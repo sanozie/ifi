@@ -1,17 +1,24 @@
 import { Hono } from 'hono'
-import { start } from 'workflow/api'
-import { handleJob } from '@workflows/job.js'
+import api from '@routes'
 
 const app = new Hono()
 
-app.get('/job', async (c) => {
-  await start(handleJob, ['cmil89zce000004i84k12r01b'])
-  return c.json({ message: "Job Queued for cmil89zce000004i84k12r01b" })
-})
-
-app.get('/', async (c) => {
+app.get('/', (c) => {
   return c.text('ye')
 })
 
+// Chat Routes
+app.post('/api/chat', api.chat.post)
+
+// Thread Routes
+app.get('/api/thread/:id', api.thread.get)
+app.put('/api/thread/:id', api.thread.put)
+app.delete('/api/thread/:id', api.thread.delete)
+
+// Thread Stream Routes
+app.get('/api/thread/:id/stream', api.thread.stream.get)
+
+// Threads Routes
+app.get('/api/threads', api.threads.get)
 
 export default app
