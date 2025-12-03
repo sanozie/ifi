@@ -13,6 +13,6 @@ export default defineConfig({
     '@providers': resolve(__dirname, './src/providers'),
   },
   routes: {
-    "/**": "./src/worker.ts"
+    "/**": "./src/index.ts"
   }
 })
