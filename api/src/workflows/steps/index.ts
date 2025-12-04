@@ -2,7 +2,8 @@ import { tool } from 'ai'
 import { z } from 'zod'
 import { closeSandbox, createPlannerSandbox, createWorkerSandbox } from '@workflows/steps/sandbox'
 import { cliQuery } from '@workflows/steps/continue'
-import { reportCompletion } from '@workflows/steps/mcp'
+import { draftSpec, reportCompletion } from '@workflows/steps/mcp'
+import { webSearch } from '@exalabs/ai-sdk'
 
 export const workerTools = {
   create_sandbox: tool({
@@ -51,6 +52,7 @@ export const workerTools = {
 }
 
 export const plannerTools = {
+  web_search: webSearch(),
   create_sandbox: tool({
     name: 'createSandbox',
     description:
@@ -93,5 +95,15 @@ export const plannerTools = {
       code: z.number().optional(),
     }),
     execute: reportCompletion
+  }),
+  draft_spec: tool({
+    name: 'draftSpec',
+    description:
+      'Create a draft design spec for a given thread based on the conversation so far.',
+    inputSchema: z.object({
+      threadId: z.string().describe('ID of the thread for which to draft the spec'),
+      repo: z.string().describe('Target repository for the spec, in all lowercase)'),
+    }),
+    execute: draftSpec
   })
 }
