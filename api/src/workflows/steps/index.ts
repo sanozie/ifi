@@ -2,7 +2,7 @@ import { tool } from 'ai'
 import { z } from 'zod'
 import { closeSandbox, createPlannerSandbox, createWorkerSandbox } from '@workflows/steps/sandbox'
 import { cliQuery } from '@workflows/steps/continue'
-import { draftSpec, reportCompletion } from '@workflows/steps/mcp'
+import { draftSpec, finalizeSpec, reportCompletion, updateSpec, updateTitle } from '@workflows/steps/mcp'
 import { webSearch } from '@exalabs/ai-sdk'
 
 export const workerTools = {
@@ -105,5 +105,36 @@ export const plannerTools = {
       repo: z.string().describe('Target repository for the spec, in all lowercase)'),
     }),
     execute: draftSpec
+  }),
+  update_spec: tool({
+    name: 'updateSpec',
+    description:
+      'Update a draft design spec for a given thread based on the conversation so far.',
+    inputSchema: z.object({
+      specId: z.string().describe('ID of the existing spec to update. If not provided, a new spec will be created.'),
+      title: z.string().optional().describe('Title for the spec. If not provided, the title will be derived from the first line of the spec content.'),
+      repo: z.string().optional().describe('Target repository for the spec, in all lowercase)'),
+      content: z.string().optional().describe('Existing spec content to update. Will fully replace the existing spec content.')
+    }),
+    execute: updateSpec
+  }),
+  finalize_spec: tool({
+    name: 'finalizeSpec',
+    description:
+      'Finalize the latest draft spec for a thread and create a queued implementation job.',
+    inputSchema: z.object({
+      threadId: z.string().describe('ID of the thread whose spec should be finalized'),
+    }),
+    execute: finalizeSpec,
+  }),
+  update_title: tool({
+    name: 'updateTitle',
+    description:
+      'Update the title of a conversation thread. Use this sparingly when the overall topic or goal changes significantly.',
+    inputSchema: z.object({
+      threadId: z.string().describe('ID of the thread to rename'),
+      title: z.string().min(3).max(120).describe('A concise, human-friendly title that summarizes the thread'),
+    }),
+    execute: updateTitle
   })
 }
