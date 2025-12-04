@@ -3,7 +3,6 @@ import ms from 'ms'
 import { CONTINUE_WORKER_CONFIG } from '@constants'
 
 const initSandbox = async ({ repo }: { repo: string }) => {
-  "use step"
   console.log(`[sandbox] initializing sandbox for repo ${repo}`)
   // Create Sandbox
   const sandbox = await Sandbox.create({
@@ -23,7 +22,6 @@ const initSandbox = async ({ repo }: { repo: string }) => {
 }
 
 const configureSandbox = async ({ sandbox, continueConfig }: { sandbox: Sandbox, continueConfig: string }) => {
-  "use step"
   await sandbox.runCommand({
     cmd: 'npm',
     args: ['install', '-g', '@continuedev/cli'],
@@ -76,6 +74,7 @@ const configureSandbox = async ({ sandbox, continueConfig }: { sandbox: Sandbox,
 }
 
 export async function trialExecute({ repo }: { repo: string }) {
+  "use step"
   const sandbox = await initSandbox({ repo })
   await configureSandbox({ sandbox, continueConfig: CONTINUE_WORKER_CONFIG })
   return { sandboxId: sandbox.sandboxId }
