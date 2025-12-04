@@ -17,7 +17,7 @@ export const plannerTools = {
 }
 
 export const workerTools = {
-  init_sandbox: initWorkerSandboxTool(tool),
+  // init_sandbox: initWorkerSandboxTool(tool),
   // close_sandbox: closeSandboxTool(tool),
   // cli_query: cliQueryTool(tool),
   report_completion: reportCompletionTool(tool),
