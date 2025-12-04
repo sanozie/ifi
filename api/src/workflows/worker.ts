@@ -6,11 +6,11 @@ import { DefaultCodegenModel, modelConfig } from '@constants'
 import { DurableAgent } from '@workflow/ai/agent'
 import { getWritable } from 'workflow'
 import { z } from 'zod'
-import { trialExecute } from '@workflows/trial'
+import { closeSandbox, createSandbox } from '@workflows/steps/sandbox'
 
 const workerTools = {
-  init_sandbox: tool({
-    name: 'initSandbox',
+  create_sandbox: tool({
+    name: 'createSandbox',
     description:
       'Initializes a Vercel Sandbox for the planner to use. Will clone the passed in repository when created. This is a one-time operation and should be called before performing any other operations on the codebase.',
     inputSchema: z.object({
@@ -21,9 +21,17 @@ const workerTools = {
     outputSchema: z.object({
       sandboxId: z.string().describe('ID of the Sandbox instance. Will be used in other tools to interact with the Sandbox instance.'),
     }),
-    execute: trialExecute
+    execute: createSandbox
   }),
-  // close_sandbox: closeSandboxTool(tool),
+  close_sandbox: tool({
+    name: 'closeSandbox',
+    description:
+      'Closes the Sandbox instance associated with the given sandboxId. This must be called when the tool is done with the Sandbox instance, before reporting completion',
+    inputSchema: z.object({
+      sandboxId: z.string().describe('ID of the Sandbox instance to close.'),
+    }),
+    execute: closeSandbox
+  }),
   // cli_query: cliQueryTool(tool),
   report_completion: tool({
     name: 'reportCompletion',
