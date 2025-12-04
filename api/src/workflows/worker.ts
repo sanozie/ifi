@@ -7,6 +7,8 @@ import { DurableAgent } from '@workflow/ai/agent'
 import { getWritable } from 'workflow'
 import { z } from 'zod'
 import { closeSandbox, createSandbox } from '@workflows/steps/sandbox'
+import { reportCompletion } from '@workflows/steps/mcp'
+import { cliQuery } from '@workflows/steps/continue'
 
 const workerTools = {
   create_sandbox: tool({
@@ -32,7 +34,16 @@ const workerTools = {
     }),
     execute: closeSandbox
   }),
-  // cli_query: cliQueryTool(tool),
+  cli_query: tool({
+    name: 'cliQuery',
+    description:
+      'This tool allows you to interact with an AI deployed in the cli of the Sandbox instance. The query should be formatted as a natural language question, formatted as human-like full sentences. Provide as much detail as possible to ensure the CLI AI is able to process your query in full.',
+    inputSchema: z.object({
+      query: z.string().describe('Natural language instructions to be passed to the CLI AI.'),
+      sandboxId: z.string().describe('ID of the Sandbox instance to use for the query. Must be provided. If you do not have a Sandbox instance, use the initSandbox tool first.'),
+    }),
+    execute: cliQuery
+  }),
   report_completion: tool({
     name: 'reportCompletion',
     description:
@@ -41,10 +52,7 @@ const workerTools = {
       summary: z.string(),
       code: z.number().optional(),
     }),
-    async execute() {
-      "use step"
-      return { acknowledged: true };
-    },
+    execute: reportCompletion
   })
 }
 
