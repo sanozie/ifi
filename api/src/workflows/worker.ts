@@ -1,16 +1,17 @@
 import { getJob, getSpec, updateJob, updateSpec } from '@db'
 import { JobStatus, SpecType } from '@interfaces'
 import type { Spec, Job } from '@db/generated/client'
-import { type UIMessageChunk } from 'ai'
+import { tool, type UIMessageChunk } from 'ai'
 import { DefaultCodegenModel, modelConfig } from '@constants'
 import { DurableAgent } from '@workflow/ai/agent'
 import { getWritable } from 'workflow'
+import { reportCompletionTool } from '@providers/mcp'
 
 const workerTools = {
   // init_sandbox: initWorkerSandboxTool(tool),
   // close_sandbox: closeSandboxTool(tool),
   // cli_query: cliQueryTool(tool),
-  // report_completion: reportCompletionTool(tool),
+  report_completion: reportCompletionTool(tool),
 }
 
 // Helper to derive feature branch name
