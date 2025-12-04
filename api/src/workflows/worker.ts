@@ -73,8 +73,6 @@ async function prepareJob({ jobId }: { jobId: string }) {
 }
 
 const buildAgent = async ({ job, spec }: { job: Job, spec: Spec}) => {
-  "use step"
-
   console.log(`[executeWorkerModel] Starting job processing for ${job.id}`)
   // System message for worker operations
   const system = `
@@ -97,7 +95,7 @@ const buildAgent = async ({ job, spec }: { job: Job, spec: Spec}) => {
   return new DurableAgent({
     model: modelConfig.codegenModel,
     system,
-    tools: workerTools,
+    // tools: workerTools,
   })
 }
 
