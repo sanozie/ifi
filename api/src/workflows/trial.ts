@@ -76,7 +76,6 @@ const configureSandbox = async ({ sandbox, continueConfig }: { sandbox: Sandbox,
 }
 
 export async function trialExecute({ repo }: { repo: string }) {
-  "use step"
   const sandbox = await initSandbox({ repo })
   await configureSandbox({ sandbox, continueConfig: CONTINUE_WORKER_CONFIG })
   return { sandboxId: sandbox.sandboxId }
