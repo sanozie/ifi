@@ -7,11 +7,6 @@ import { DurableAgent } from '@workflow/ai/agent'
 import { getWritable } from 'workflow'
 import { workerTools } from '@workflows/steps'
 
-// Helper to derive feature branch name
-function deriveFeatureBranch(spec: Spec): string {
-  return `feat/autogen-${spec.id.slice(0, 8)}`;
-}
-
 export async function handleJob({ jobId }: { jobId: string }) {
   "use workflow"
 
@@ -64,7 +59,7 @@ async function prepareJob({ jobId }: { jobId: string }) {
   // Determine a feature branch - for UPDATE specs, use the branch
   const featureBranch = spec.type === SpecType.UPDATE && spec.branch
     ? spec.branch
-    : deriveFeatureBranch(spec)
+    : `feat/autogen-${spec.id.slice(0, 8)}`
 
   spec = await updateSpec(spec.id, { branch: featureBranch })
 

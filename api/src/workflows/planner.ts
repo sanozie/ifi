@@ -2,7 +2,7 @@ import { type ModelMessage, type UIMessageChunk } from 'ai'
 import { modelConfig, REPOS } from '@constants'
 import { DurableAgent } from '@workflow/ai/agent'
 import { getWritable } from 'workflow'
-import { plannerTools } from '@providers'
+import { plannerTools } from '@workflows/steps'
 
 export async function plan({ messages }: { messages: ModelMessage[] }) {
   "use workflow"
@@ -21,8 +21,6 @@ export async function plan({ messages }: { messages: ModelMessage[] }) {
 }
 
 const buildAgent = async () => {
-  "use step"
-
   /* --------------------------------------------------------------- */
   /* 1)  Function entry                                              */
   /* --------------------------------------------------------------- */
@@ -64,6 +62,7 @@ const buildAgent = async () => {
       • NEVER leak internal reasoning or tool call JSON to the user—only properly formatted tool calls.  
       • Do NOT output any completion text directly; the client UI renders results from tools.
       `;
+
   console.log(`[plan] 🚀 Calling streamText(model="${modelConfig.plannerModel}") …`);
 
   return new DurableAgent({

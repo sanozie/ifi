@@ -1,6 +1,6 @@
 import { Sandbox } from '@vercel/sandbox'
 import ms from 'ms'
-import { CONTINUE_WORKER_CONFIG } from '@constants'
+import { CONTINUE_PLANNER_CONFIG, CONTINUE_WORKER_CONFIG } from '@constants'
 
 const initSandbox = async ({ repo }: { repo: string }) => {
   console.log(`[sandbox] initializing sandbox for repo ${repo}`)
@@ -73,10 +73,17 @@ const configureSandbox = async ({ sandbox, continueConfig }: { sandbox: Sandbox,
   console.log(`[sandbox] git configured: ${gitLsOutput.stdout}`)
 }
 
-export async function createSandbox({ repo }: { repo: string }) {
+export async function createWorkerSandbox({ repo }: { repo: string }) {
   "use step"
   const sandbox = await initSandbox({ repo })
   await configureSandbox({ sandbox, continueConfig: CONTINUE_WORKER_CONFIG })
+  return { sandboxId: sandbox.sandboxId }
+}
+
+export async function createPlannerSandbox({ repo }: { repo: string }) {
+  "use step"
+  const sandbox = await initSandbox({ repo })
+  await configureSandbox({ sandbox, continueConfig: CONTINUE_PLANNER_CONFIG })
   return { sandboxId: sandbox.sandboxId }
 }
 
