@@ -95,7 +95,7 @@ const buildAgent = async ({ job, spec }: { job: Job, spec: Spec}) => {
   return new DurableAgent({
     model: modelConfig.codegenModel,
     system,
-    // tools: workerTools,
+    tools: workerTools,
   })
 }
 
