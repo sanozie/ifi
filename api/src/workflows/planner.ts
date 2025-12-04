@@ -1,5 +1,4 @@
-import { type ModelMessage, streamText, type StreamTextOnFinishCallback, tool, type UIMessageChunk } from 'ai'
-import type { ModelConfig } from '@interfaces'
+import { type ModelMessage, type UIMessageChunk } from 'ai'
 import { modelConfig, REPOS } from '@constants'
 import { DurableAgent } from '@workflow/ai/agent'
 import { getWritable } from 'workflow'
@@ -7,6 +6,22 @@ import { plannerTools } from '@providers'
 
 export async function plan({ messages }: { messages: ModelMessage[] }) {
   "use workflow"
+
+  const agent = await buildAgent()
+
+  const writable = getWritable<UIMessageChunk>();
+
+  await agent.stream({
+    messages,
+    stopWhen: (response: any) => response.toolCalls?.some(
+      (call: { toolName?: string }) => call.toolName === 'reportCompletion',
+    ),
+    writable
+  })
+}
+
+const buildAgent = async () => {
+  "use step"
 
   /* --------------------------------------------------------------- */
   /* 1)  Function entry                                              */
@@ -51,19 +66,9 @@ export async function plan({ messages }: { messages: ModelMessage[] }) {
       `;
   console.log(`[plan] 🚀 Calling streamText(model="${modelConfig.plannerModel}") …`);
 
-  const writable = getWritable<UIMessageChunk>();
-
-  const agent = new DurableAgent({
+  return new DurableAgent({
     model: modelConfig.plannerModel,
     system,
     tools: plannerTools,
-  })
-
-  await agent.stream({
-    messages,
-    stopWhen: (response: any) => response.toolCalls?.some(
-      (call: { toolName?: string }) => call.toolName === 'reportCompletion',
-    ),
-    writable
   })
 }

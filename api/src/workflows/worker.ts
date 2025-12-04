@@ -18,22 +18,9 @@ export async function handleJob({ jobId }: { jobId: string }) {
 
   const { job, spec } = await prepareJob({ jobId })
 
-  console.log(`[executeWorkerModel] Starting job processing for ${job.id}`)
-  // System message for worker operations
-  const system = `
-      You are a engineering worker AI that processes job requests to edit and apply code in the repositories you have access to, based off of a specification.
-      You'll be given a full-featured implementation specification for the job, as well as environment context. Your task is to process the specification in a sandbox environment and apply the changes to the repository.
-      
-      The detailed workflow is as follows:
-      1. Initialize a sandbox environment for the job. The environment will have an AI agent installed in the CLI that will respond to your subsequent queries. Your cli_query tool will be used as your primary interface to the sandbox environment, and you will instruct the AI agent to complete your goal.
-      2. Check for the existence of the implementation branch on the github repository. If it doesn't exist, create it based off of main. Checkout the branch to prepare for implementation.
-      3. Pass the specification to the apply tool, word for word, to generate and apply the changes.
-         - Make sure to ask the cli tool to create and push the commit after the changes are made.
-         - You are only allowed to call the apply tool once. Do not attempt to redo it.
-      4. Finally, determine if this is a new feature or an update from the specification, and create a PR if it is initial specification, and not an update one.
-      5. Report your completion of the task.
-      
-      Execute these steps in order and return the results. Be concise and focused on completing the workflow.`;
+  const agent = await buildAgent({ job, spec })
+
+  const writable = getWritable<UIMessageChunk>();
 
   // Create messages for the model
   const messages = [
@@ -50,16 +37,6 @@ export async function handleJob({ jobId }: { jobId: string }) {
         `
     }
   ];
-
-  console.log(`[executeWorkerModel] 🚀 Calling generateText with model "${DefaultCodegenModel}"`);
-
-  const agent = new DurableAgent({
-    model: modelConfig.codegenModel,
-    system,
-    tools: workerTools,
-  })
-
-  const writable = getWritable<UIMessageChunk>();
 
   await agent.stream({
     messages,
@@ -95,20 +72,35 @@ async function prepareJob({ jobId }: { jobId: string }) {
   return { job, spec }
 }
 
-/**
- * Central model function that orchestrates worker tools for job processing
- */
-async function executeJob({ spec, job }: { spec: Spec, job: Job }) {
-  try {
+const buildAgent = async ({ job, spec }: { job: Job, spec: Spec}) => {
+  "use step"
 
-  } catch (error: any) {
-    console.error(`[executeWorkerModel] Error processing job ${job.id}: ${error.message}`)
-    return {
-      success: false,
-      error: error.message
-    }
-  }
+  console.log(`[executeWorkerModel] Starting job processing for ${job.id}`)
+  // System message for worker operations
+  const system = `
+      You are a engineering worker AI that processes job requests to edit and apply code in the repositories you have access to, based off of a specification.
+      You'll be given a full-featured implementation specification for the job, as well as environment context. Your task is to process the specification in a sandbox environment and apply the changes to the repository.
+      
+      The detailed workflow is as follows:
+      1. Initialize a sandbox environment for the job. The environment will have an AI agent installed in the CLI that will respond to your subsequent queries. Your cli_query tool will be used as your primary interface to the sandbox environment, and you will instruct the AI agent to complete your goal.
+      2. Check for the existence of the implementation branch on the github repository. If it doesn't exist, create it based off of main. Checkout the branch to prepare for implementation.
+      3. Pass the specification to the apply tool, word for word, to generate and apply the changes.
+         - Make sure to ask the cli tool to create and push the commit after the changes are made.
+         - You are only allowed to call the apply tool once. Do not attempt to redo it.
+      4. Finally, determine if this is a new feature or an update from the specification, and create a PR if it is initial specification, and not an update one.
+      5. Report your completion of the task.
+      
+      Execute these steps in order and return the results. Be concise and focused on completing the workflow.`;
+
+  console.log(`[executeWorkerModel] 🚀 Calling generateText with model "${DefaultCodegenModel}"`);
+
+  return new DurableAgent({
+    model: modelConfig.codegenModel,
+    system,
+    tools: workerTools,
+  })
 }
+
 
 
 
