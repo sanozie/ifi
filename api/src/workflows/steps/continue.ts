@@ -1,7 +1,8 @@
 import { Sandbox } from '@vercel/sandbox'
 
 const runContinueCliQuery = async ({ query, sandbox }: { query: string; sandbox: Sandbox }) => {
-  const runner = await sandbox.runCommand('cn', ['--config', './.continue/config.yaml', '-p', '--auto', query])
+  console.log(`[run query] query: ${query}`)
+  const runner = await sandbox.runCommand('cn', ['--config', './.continue/config.yaml', '-p', '--auto', `"${query}"`])
 
   const res = {
     stdout: await runner.stdout() || null,
