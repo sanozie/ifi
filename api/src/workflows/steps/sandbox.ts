@@ -2,26 +2,7 @@ import { Sandbox } from '@vercel/sandbox'
 import ms from 'ms'
 import { CONTINUE_PLANNER_CONFIG, CONTINUE_WORKER_CONFIG } from '@constants'
 
-const initSandbox = async ({ repo }: { repo: string }) => {
-  console.log(`[sandbox] initializing sandbox for repo ${repo}`)
-  // Create Sandbox
-  const sandbox = await Sandbox.create({
-    source: {
-      url: `https://github.com/sanozie/${repo}.git`,
-      type: 'git',
-      username: "x-access-token",
-      password: process.env.GITHUB_TOKEN
-    },
-    resources: { vcpus: 2 },
-    timeout: ms('15m'),
-    runtime: 'node22'
-  })
-
-  console.log(`[sandbox] sandbox initialized for repo ${repo}: ${sandbox.sandboxId}`)
-  return sandbox
-}
-
-const configureSandbox = async ({ sandbox, continueConfig }: { sandbox: Sandbox, continueConfig: string }) => {
+const configureContinueCli = async ({ sandbox }: { sandbox: Sandbox }) => {
   await sandbox.runCommand({
     cmd: 'npm',
     args: ['install', '-g', '@continuedev/cli'],
@@ -33,11 +14,25 @@ const configureSandbox = async ({ sandbox, continueConfig }: { sandbox: Sandbox,
   await sandbox.mkDir('.continue/.continue')
   await sandbox.writeFiles([{
     path: `.continue/.continue/config.yaml`,
-    content: Buffer.from(continueConfig)
+    content: Buffer.from(CONTINUE_WORKER_CONFIG)
   }])
 
   console.log(`[sandbox] continue config written @ .continue/.continue/config.yaml`)
+}
+export async function createWorkerSandbox({ repo }: { repo: string }) {
+  "use step"
+  
+  console.log(`[sandbox] initializing sandbox for repo ${repo}`)
+  // Create Sandbox
+  const sandbox = await Sandbox.create({
+    resources: { vcpus: 2 },
+    timeout: ms('15m'),
+    runtime: 'node22'
+  })
 
+  console.log(`[sandbox] sandbox initialized for repo ${repo}: ${sandbox.sandboxId}`)
+  
+  await configureContinueCli({ sandbox })
 
   // Git Operations
   const gitCredentialHelper = await sandbox.runCommand({
@@ -47,7 +42,7 @@ const configureSandbox = async ({ sandbox, continueConfig }: { sandbox: Sandbox,
 
   await sandbox.runCommand({
     cmd: 'echo',
-    args: [`https://x-access-token:${process.env.GITHUB_TOKEN}@github.com`, '>', '~/.git-credentials'],
+    args: [`https://x-access-token:${process.env.GITHUB_TOKEN}@github.com`, '>', './.git-credentials'],
   })
 
   await sandbox.runCommand({
@@ -71,19 +66,37 @@ const configureSandbox = async ({ sandbox, continueConfig }: { sandbox: Sandbox,
   }
 
   console.log(`[sandbox] git configured: ${gitLsOutput.stdout}`)
-}
 
-export async function createWorkerSandbox({ repo }: { repo: string }) {
-  "use step"
-  const sandbox = await initSandbox({ repo })
-  await configureSandbox({ sandbox, continueConfig: CONTINUE_WORKER_CONFIG })
+  await sandbox.mkdir('tmp')
+  await sandbox.runCommand({
+    cmd: 'git',
+    args: ['clone', 'https://github.com/sanozie/${repo}.git', 'tmp']
+  })
   return { sandboxId: sandbox.sandboxId }
 }
 
 export async function createPlannerSandbox({ repo }: { repo: string }) {
   "use step"
-  const sandbox = await initSandbox({ repo })
-  await configureSandbox({ sandbox, continueConfig: CONTINUE_PLANNER_CONFIG })
+
+  console.log(`[sandbox] initializing sandbox for repo ${repo}`)
+
+  // Create Sandbox
+  const sandbox = await Sandbox.create({
+    source: {
+      url: `https://github.com/sanozie/${repo}.git`,
+      type: 'git',
+      username: "x-access-token",
+      password: process.env.GITHUB_TOKEN
+    },
+    resources: { vcpus: 2 },
+    timeout: ms('15m'),
+    runtime: 'node22'
+  })
+
+  console.log(`[sandbox] sandbox initialized for repo ${repo}: ${sandbox.sandboxId}`)
+
+  await configureContinueCli({ sandbox })
+
   return { sandboxId: sandbox.sandboxId }
 }
 
