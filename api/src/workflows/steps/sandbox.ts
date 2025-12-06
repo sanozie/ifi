@@ -2,7 +2,12 @@ import { Sandbox } from '@vercel/sandbox'
 import ms from 'ms'
 import { CONTINUE_PLANNER_CONFIG, CONTINUE_WORKER_CONFIG } from '@constants'
 
-const configureContinueCli = async ({ sandbox }: { sandbox: Sandbox }) => {
+const continueConfig = {
+  planner: CONTINUE_PLANNER_CONFIG,
+  worker: CONTINUE_PLANNER_CONFIG
+}
+
+const configureContinueCli = async ({ sandbox, context }: { sandbox: Sandbox; context: 'planner' | 'worker' }) => {
   await sandbox.runCommand({
     cmd: 'npm',
     args: ['install', '-g', '@continuedev/cli'],
@@ -14,7 +19,7 @@ const configureContinueCli = async ({ sandbox }: { sandbox: Sandbox }) => {
   await sandbox.mkDir('.continue/.continue')
   await sandbox.writeFiles([{
     path: `.continue/.continue/config.yaml`,
-    content: Buffer.from(CONTINUE_WORKER_CONFIG)
+    content: Buffer.from(continueConfig[context])
   }])
 
   console.log(`[sandbox] continue config written @ .continue/.continue/config.yaml`)
@@ -32,7 +37,7 @@ export async function createWorkerSandbox({ repo }: { repo: string }) {
 
   console.log(`[sandbox] sandbox initialized for repo ${repo}: ${sandbox.sandboxId}`)
   
-  await configureContinueCli({ sandbox })
+  await configureContinueCli({ sandbox, context: 'worker' })
 
   // Git Operations
   const gitCredentialHelper = await sandbox.runCommand({
@@ -95,7 +100,7 @@ export async function createPlannerSandbox({ repo }: { repo: string }) {
 
   console.log(`[sandbox] sandbox initialized for repo ${repo}: ${sandbox.sandboxId}`)
 
-  await configureContinueCli({ sandbox })
+  await configureContinueCli({ sandbox, context: 'planner' })
 
   return { sandboxId: sandbox.sandboxId }
 }

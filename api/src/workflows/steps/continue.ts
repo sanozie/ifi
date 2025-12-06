@@ -4,7 +4,7 @@ const runContinueCliQuery = async ({ query, sandbox, context }: { query: string;
   console.log(`[run query] query: ${query}`)
   const runner = await sandbox.runCommand({
     cmd: 'cn',
-    cwd: context === 'worker' ? 'tmp' : '.',
+    cwd: context === 'worker' ? './tmp' : './',
     args: ['--config', './.continue/config.yaml', '-p', '--auto', `"${query}"`]
   })
 
