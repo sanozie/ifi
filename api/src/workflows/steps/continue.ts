@@ -2,10 +2,19 @@ import { Sandbox } from '@vercel/sandbox'
 
 const runContinueCliQuery = async ({ query, sandbox, context }: { query: string; sandbox: Sandbox; context: 'planner' | 'worker' }) => {
   console.log(`[run query] query: ${query}`)
+
+  // Write query to a temporary file to handle multiline content
+  const workDir = context === 'worker' ? './tmp' : './'
+  const queryFile = `${workDir}/.cn-query-tmp.txt`
+  await sandbox.writeFiles([{
+    path: queryFile,
+    content: Buffer.from(query, 'utf-8')
+  }])
+
   const runner = await sandbox.runCommand({
-    cmd: 'cn',
-    cwd: context === 'worker' ? './tmp' : './',
-    args: ['--config', './.continue/config.yaml', '-p', '--auto', query]
+    cmd: 'sh',
+    cwd: workDir,
+    args: ['-c', `cn --config ./.continue/config.yaml -p --auto "$(cat .cn-query-tmp.txt)"`]
   })
 
   const res = {
