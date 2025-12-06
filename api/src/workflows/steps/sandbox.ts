@@ -67,7 +67,7 @@ export async function createWorkerSandbox({ repo }: { repo: string }) {
 
   console.log(`[sandbox] git configured: ${gitLsOutput.stdout}`)
 
-  await sandbox.mkdir('tmp')
+  await sandbox.mkDir('tmp')
   await sandbox.runCommand({
     cmd: 'git',
     args: ['clone', 'https://github.com/sanozie/${repo}.git', 'tmp']
