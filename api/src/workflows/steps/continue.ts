@@ -1,8 +1,12 @@
 import { Sandbox } from '@vercel/sandbox'
 
-const runContinueCliQuery = async ({ query, sandbox }: { query: string; sandbox: Sandbox }) => {
+const runContinueCliQuery = async ({ query, sandbox, context }: { query: string; sandbox: Sandbox; context: 'planner' | 'worker' }) => {
   console.log(`[run query] query: ${query}`)
-  const runner = await sandbox.runCommand('cn', ['--config', './.continue/config.yaml', '-p', '--auto', `"${query}"`])
+  const runner = await sandbox.runCommand({
+    cmd: 'cn',
+    cwd: context === 'worker' ? 'tmp' : '.',
+    args: ['--config', './.continue/config.yaml', '-p', '--auto', `"${query}"`]
+  })
 
   const res = {
     stdout: await runner.stdout() || null,
@@ -14,9 +18,16 @@ const runContinueCliQuery = async ({ query, sandbox }: { query: string; sandbox:
   return res
 }
 
-export async function cliQuery({ query, sandboxId }: { query: string; sandboxId: string; }) {
+export async function plannerCliQuery({ query, sandboxId }: { query: string; sandboxId: string; }) {
   "use step"
 
   const sandbox = await Sandbox.get({ sandboxId })
-  return await runContinueCliQuery({ query, sandbox })
+  return await runContinueCliQuery({ query, sandbox, context: 'planner' })
+}
+
+export async function workerCliQuery({ query, sandboxId }: { query: string; sandboxId: string; }) {
+  "use step"
+
+  const sandbox = await Sandbox.get({ sandboxId })
+  return await runContinueCliQuery({ query, sandbox, context: 'worker' })
 }
