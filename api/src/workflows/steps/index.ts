@@ -1,7 +1,7 @@
 import { tool } from 'ai'
 import { z } from 'zod'
 import { closeSandbox, createPlannerSandbox, createWorkerSandbox } from '@workflows/steps/sandbox'
-import { cliQuery } from '@workflows/steps/continue'
+import { plannerCliQuery, workerCliQuery } from '@workflows/steps/continue'
 import { draftSpec, finalizeSpec, reportCompletion, updateSpec, updateTitle } from '@workflows/steps/mcp'
 import { webSearch } from '@exalabs/ai-sdk'
 
@@ -37,7 +37,7 @@ export const workerTools = {
       query: z.string().describe('Natural language instructions to be passed to the CLI AI.'),
       sandboxId: z.string().describe('ID of the Sandbox instance to use for the query. Must be provided. If you do not have a Sandbox instance, use the initSandbox tool first.'),
     }),
-    execute: cliQuery
+    execute: workerCliQuery
   }),
   report_completion: tool({
     name: 'reportCompletion',
@@ -84,7 +84,7 @@ export const plannerTools = {
       query: z.string().describe('Natural language instructions to be passed to the CLI AI.'),
       sandboxId: z.string().describe('ID of the Sandbox instance to use for the query. Must be provided. If you do not have a Sandbox instance, use the initSandbox tool first.'),
     }),
-    execute: cliQuery
+    execute: plannerCliQuery
   }),
   report_completion: tool({
     name: 'reportCompletion',
